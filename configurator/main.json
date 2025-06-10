@@ -1,0 +1,11 @@
+{
+   
+    "data_scraping_conf" : {
+        "currency_pairs" : [
+            "bitcoin"
+        ],
+        "time_zone" : "Asia/Kolkata",
+        "fiat_currency" : "INR"
+    }
+    
+}

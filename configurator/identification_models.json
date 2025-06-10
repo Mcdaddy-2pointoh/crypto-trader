@@ -1,0 +1,17 @@
+{
+    "period" : "weeks",
+    "models_used" : ["moving_average", "localised_estimator", "rsi"],
+    "model_params" : {
+        "moving_average" : {
+            "rolling_period" : 4
+        },
+        "localised_estimator" : {
+
+        },
+        "rsi" : {
+            "upper_bound" : 60,
+            "lower_bound" : 30
+        }
+
+    }
+}

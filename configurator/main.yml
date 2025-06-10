@@ -1,0 +1,17 @@
+main:
+
+  # Configuration for the Data Scrapping
+  data_scraping_conf:
+
+    # contains information abot the cryto currencies to monitor
+    crypto_currencies: 
+      - 'bitcoin'
+
+    # timezones to presnet the data in
+    timezones: 'Asia/Kolkata'
+
+    # the fiat currency to be traded in
+    fiat_currency: 'INR'
+
+    # Duration of data archive
+    archive_historic_period_days: 30
