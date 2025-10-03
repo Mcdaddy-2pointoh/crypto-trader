@@ -1,14 +1,29 @@
 import pandas as pd
 import matplotlib.pyplot as plt 
+import plotly.graph_objects as go
 
 def plot_equity(equity_df: pd.DataFrame):
-    plt.figure(figsize=(12,4))
-    plt.plot(equity_df.index, equity_df['equity'], label='Equity Curve')
-    plt.title('Portfolio Value Over Time')
-    plt.xlabel('Time')
-    plt.ylabel('Equity (USD)')
-    plt.legend()
-    plt.show()
+    fig = go.Figure()
+
+    # Add the equity curve
+    fig.add_trace(go.Scatter(
+        x=equity_df.index,
+        y=equity_df['equity'],
+        mode='lines',
+        name='Equity Curve',
+        line=dict(color='blue', width=2)
+    ))
+
+    # Update layout
+    fig.update_layout(
+        title='Portfolio Value Over Time',
+        xaxis_title='Time',
+        yaxis_title='Equity (USD)',
+        template='plotly_white',
+        legend=dict(x=0, y=1)
+    )
+
+    fig.show()
 
 def backtest(df: pd.DataFrame, config: dict):
     """

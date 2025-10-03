@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-def apply_mca_dynamic_stoploss_strategy(df: pd.DataFrame, config: dict, past_signal: int):
+def apply_mca_dynamic_stoploss_strategy(df: pd.DataFrame, config: dict):
     """
     Function: Produces 'Position' and 'Signal' for Moving Average Crossover strategy on each Row
     Args:
@@ -21,10 +21,7 @@ def apply_mca_dynamic_stoploss_strategy(df: pd.DataFrame, config: dict, past_sig
     SMA_SHORT = df[-short_window:]['close'].mean()
     SMA_LONG = df[-long_window:]['close'].mean()
 
-    # Create a signal for each row
+    # Create a signal
     signal = int(SMA_SHORT > SMA_LONG)
 
-    # Decide a position based on current and previous signal
-    position = signal - past_signal
-
-    return position, signal
+    return signal
