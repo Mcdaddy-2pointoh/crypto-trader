@@ -1,7 +1,7 @@
 exchange: binance
 
 trading:
-  symbol: "SOL/USDT"
+  symbol: "BTC/USDT"
   timeframe: "1d"
   duration_limit: 3000 #500 timeframes of data
   initial_balance: 1000   # USD
@@ -10,11 +10,14 @@ trading:
 strategy:
   mca:
     short_window: 20
+    mid_window: 40
     long_window: 100
 
   mca_dynamic_stoploss:
     short_window: 20
     long_window: 100
+    max_guard_window: 3
+    delta: 0.8
 
   mca_guarded:
     short_window: 20

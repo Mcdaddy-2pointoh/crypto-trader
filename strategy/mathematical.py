@@ -1,5 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 
 def apply_mca_strategy(df: pd.DataFrame, config: dict):
     """
@@ -13,10 +14,12 @@ def apply_mca_strategy(df: pd.DataFrame, config: dict):
 
     # Load the strategy config
     short_window = config['strategy']['mca']['short_window']
+    mid_window = config['strategy']['mca']['mid_window']
     long_window = config['strategy']['mca']['long_window']
 
     # Create a short and a long window MA 
     df['SMA_SHORT'] = df['close'].rolling(window=short_window).mean()
+    df['SMA_MID'] = df['close'].rolling(window=mid_window).mean()
     df['SMA_LONG'] = df['close'].rolling(window=long_window).mean()
 
     # Create a Signal Column to mark signal
@@ -74,10 +77,9 @@ def apply_mca_guarded_strategy(df: pd.DataFrame, config: dict):
 
     return df
 
-
 def plot_signals_mca_strategy(df: pd.DataFrame, config: dict):
     """
-    Function: Plot price with moving averages and buy/sell signals.
+    Function: Plot price with moving averages and buy/sell signals using Plotly.
     Args:
         df: OHLCV data with 'Signal' and 'Position' columns
         config (dict): The entire config dictionary 
@@ -91,39 +93,65 @@ def plot_signals_mca_strategy(df: pd.DataFrame, config: dict):
     timeframe = str(config['trading']['timeframe'])
     symbol = str(config['trading']['symbol'])
 
-    df['slope_rud'] = df['SMA_SHORT'].diff() 
-    df['slope_dir'] = df['SMA_SHORT'].diff() / abs(df['SMA_SHORT'].diff())
-    df['slope_dir_change'] = df['slope_dir'].diff()
+    # Create the figure
+    fig = go.Figure()
 
-    # Create figure + primary axis
-    fig, ax1 = plt.subplots(figsize=(12,6))
+    # Price
+    fig.add_trace(go.Scatter(
+        x=df.index, y=df['close'],
+        mode='lines',
+        name='Price',
+        line=dict(color='black', width=1)
+    ))
 
-    # Primary axis: price + SMAs + buy/sell signals
-    ax1.plot(df.index, df['close'], label='Price', alpha=0.7, color="black")
-    ax1.plot(df.index, df['SMA_SHORT'], label=f'SMA {short_window}', color="blue")
-    ax1.plot(df.index, df['SMA_LONG'], label=f'SMA {long_window}', color="red")
+    # Short SMA
+    fig.add_trace(go.Scatter(
+        x=df.index, y=df['SMA_SHORT'],
+        mode='lines',
+        name=f'SMA {short_window}',
+        line=dict(color='blue')
+    ))
+
+    # Long SMA
+    fig.add_trace(go.Scatter(
+        x=df.index, y=df['SMA_LONG'],
+        mode='lines',
+        name=f'SMA {long_window}',
+        line=dict(color='red')
+    ))
 
     # Buy signals
-    ax1.plot(df[df['Position'] == 1].index,
-             df['SMA_SHORT'][df['Position'] == 1],
-             '^', markersize=10, color='g', label='Buy')
+    fig.add_trace(go.Scatter(
+        x=df[df['Position'] == 1].index,
+        y=df['SMA_SHORT'][df['Position'] == 1],
+        mode='markers',
+        name='Buy',
+        marker=dict(symbol='triangle-up', size=12, color='green')
+    ))
+
     # Sell signals
-    ax1.plot(df[df['Position'] == -1].index,
-             df['SMA_SHORT'][df['Position'] == -1],
-             'v', markersize=10, color='r', label='Sell')
+    fig.add_trace(go.Scatter(
+        x=df[df['Position'] == -1].index,
+        y=df['SMA_SHORT'][df['Position'] == -1],
+        mode='markers',
+        name='Sell',
+        marker=dict(symbol='triangle-down', size=12, color='red')
+    ))
 
-    ax1.set_ylabel("Price / SMAs")
-    ax1.legend(loc="upper left")
+    # Layout with dual y-axes
+    fig.update_layout(
+        title=f"{symbol} {timeframe} - Signals",
+        xaxis=dict(title="Date"),
+        yaxis=dict(title="Price / SMAs"),
+        yaxis2=dict(
+            title=f"SMA {short_window} direction change",
+            overlaying='y',
+            side='right',
+            showgrid=False
+        ),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        height=600,
+        template="plotly_white"
+    )
 
-    # Secondary axis: SMA slope
-    ax2 = ax1.twinx()
-    ax2.plot(df.index, df['slope_dir_change'],
-             label=f"SMA {short_window} direction change", color="green")
-    ax2.set_ylabel(f"SMA {short_window} direction change", color="green")
-    ax2.legend(loc="upper right")
-
-    # Title
-    plt.title(f'{symbol} {timeframe} - Signals')
-    plt.show()
-
-
+    fig.show()
