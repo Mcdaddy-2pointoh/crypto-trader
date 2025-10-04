@@ -26,6 +26,9 @@ strategy:
     stop_loss_pct: 0.02
     take_profit_pct: 0.04
 
+
+switch:
+
 plotting:
   plot_signals: true
   plot_equity: true
