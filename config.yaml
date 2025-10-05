@@ -1,11 +1,11 @@
 exchange: binance
 
 trading:
-  symbol: "BTC/USDT"
+  symbol: "SOL/USDT"
   timeframe: "1d"
   duration_limit: 3000 #500 timeframes of data
   initial_balance: 1000   # USD
-  trade_fraction: 1.0    # fraction of capital per trade (1.0 = all-in)
+  trade_fraction: 1    # fraction of capital per trade (1.0 = all-in)
 
 strategy:
   mca:
@@ -25,6 +25,12 @@ strategy:
     trend_filter_window: 200
     stop_loss_pct: 0.02
     take_profit_pct: 0.04
+
+  dip_top:
+    window: 15
+    dip_pct: 5
+    top_pct: 15
+    strat_type: "mean" # can be "min-max"
 
 plotting:
   plot_signals: true
