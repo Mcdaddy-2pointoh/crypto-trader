@@ -32,7 +32,9 @@ strategy:
     top_pct: 15
     strat_type: "mean" # can be "min-max"
 
-switch:
+volatility:
+  atr:
+    period: 14
 
 plotting:
   plot_signals: true
